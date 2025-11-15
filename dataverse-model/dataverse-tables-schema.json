@@ -1,0 +1,757 @@
+{
+  "solution": {
+    "name": "OOOOOCalendar",
+    "displayName": "OOOOO Calendar - Staff Scheduling & Approval System",
+    "version": "1.0.0.0",
+    "publisher": "Minnesota IT Services",
+    "description": "Teams-integrated staff scheduling and time-off approval system using Dataverse",
+    "packageType": "Unmanaged"
+  },
+  "dataverse": {
+    "environment": "Microsoft Dataverse for Teams",
+    "deployment": "DataverseSolution.zip",
+    "licensing": "Included with Microsoft Teams license (no premium required)"
+  },
+  "tables": [
+    {
+      "logicalName": "ooooo_staffschedule",
+      "displayName": "Staff Schedule",
+      "pluralDisplayName": "Staff Schedules",
+      "description": "Main schedule and time-off request data",
+      "ownership": "User",
+      "hasActivities": false,
+      "hasNotes": false,
+      "primaryNameColumn": "ooooo_requestid",
+      "columns": [
+        {
+          "logicalName": "ooooo_requestid",
+          "displayName": "Request ID",
+          "type": "Text",
+          "maxLength": 100,
+          "required": "ApplicationRequired",
+          "isPrimaryName": true,
+          "description": "Unique identifier (e.g., REQ-20250115-001)"
+        },
+        {
+          "logicalName": "ooooo_employee",
+          "displayName": "Employee",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "ApplicationRequired",
+          "description": "Link to employee user record"
+        },
+        {
+          "logicalName": "ooooo_employeeemail",
+          "displayName": "Employee Email",
+          "type": "Text",
+          "maxLength": 200,
+          "required": "ApplicationRequired",
+          "description": "Employee email address"
+        },
+        {
+          "logicalName": "ooooo_scheduledate",
+          "displayName": "Schedule Date",
+          "type": "DateTime",
+          "format": "DateOnly",
+          "required": "ApplicationRequired",
+          "description": "Date for the schedule entry"
+        },
+        {
+          "logicalName": "ooooo_status",
+          "displayName": "Status",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "Onsite", "color": "#4CAF50"},
+            {"value": 2, "label": "Offsite", "color": "#2196F3"},
+            {"value": 3, "label": "OOO-Pending", "color": "#FFC107"},
+            {"value": 4, "label": "OOO-Approved", "color": "#9C27B0"},
+            {"value": 5, "label": "OOO-Rejected", "color": "#F44336"}
+          ],
+          "defaultValue": 1,
+          "description": "Current status of the schedule entry"
+        },
+        {
+          "logicalName": "ooooo_requesttype",
+          "displayName": "Request Type",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "Regular Schedule"},
+            {"value": 2, "label": "Vacation"},
+            {"value": 3, "label": "Sick Leave"},
+            {"value": 4, "label": "Personal Day"},
+            {"value": 5, "label": "Other"}
+          ],
+          "defaultValue": 1,
+          "description": "Type of request or schedule entry"
+        },
+        {
+          "logicalName": "ooooo_startdate",
+          "displayName": "Start Date",
+          "type": "DateTime",
+          "format": "DateOnly",
+          "required": "None",
+          "description": "Start date for multi-day OOO requests"
+        },
+        {
+          "logicalName": "ooooo_enddate",
+          "displayName": "End Date",
+          "type": "DateTime",
+          "format": "DateOnly",
+          "required": "None",
+          "description": "End date for multi-day OOO requests"
+        },
+        {
+          "logicalName": "ooooo_numberofdays",
+          "displayName": "Number of Days",
+          "type": "WholeNumber",
+          "minValue": 0,
+          "maxValue": 365,
+          "required": "None",
+          "description": "Calculated number of days in request"
+        },
+        {
+          "logicalName": "ooooo_comments",
+          "displayName": "Comments",
+          "type": "Multiline",
+          "maxLength": 2000,
+          "required": "None",
+          "description": "Optional comments from employee"
+        },
+        {
+          "logicalName": "ooooo_submissiondatetime",
+          "displayName": "Submission Date/Time",
+          "type": "DateTime",
+          "format": "DateAndTime",
+          "required": "ApplicationRequired",
+          "description": "When the request was submitted"
+        },
+        {
+          "logicalName": "ooooo_approver",
+          "displayName": "Approved By",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "None",
+          "description": "Manager who approved/rejected"
+        },
+        {
+          "logicalName": "ooooo_approvaldatetime",
+          "displayName": "Approval Date/Time",
+          "type": "DateTime",
+          "format": "DateAndTime",
+          "required": "None",
+          "description": "When approval/rejection occurred"
+        },
+        {
+          "logicalName": "ooooo_managercomments",
+          "displayName": "Manager Comments",
+          "type": "Multiline",
+          "maxLength": 2000,
+          "required": "None",
+          "description": "Manager's comments on approval/rejection"
+        },
+        {
+          "logicalName": "ooooo_approvalrequestid",
+          "displayName": "Approval Request ID",
+          "type": "Text",
+          "maxLength": 100,
+          "required": "None",
+          "description": "Teams approval action request ID for tracking"
+        },
+        {
+          "logicalName": "ooooo_calendareventid",
+          "displayName": "Calendar Event ID",
+          "type": "Text",
+          "maxLength": 200,
+          "required": "None",
+          "description": "Outlook calendar event ID for synchronization"
+        },
+        {
+          "logicalName": "ooooo_isactive",
+          "displayName": "Is Active",
+          "type": "TwoOptions",
+          "trueLabel": "Active",
+          "falseLabel": "Inactive",
+          "defaultValue": true,
+          "required": "ApplicationRequired",
+          "description": "Whether this entry is active (not cancelled)"
+        }
+      ],
+      "views": [
+        {
+          "name": "Active Schedules",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_isactive eq true"
+        },
+        {
+          "name": "Pending Approvals",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_status eq 3 AND ooooo_isactive eq true"
+        },
+        {
+          "name": "My Requests",
+          "viewType": "Personal",
+          "fetchXml": "Filter: owner eq current user"
+        }
+      ],
+      "forms": [
+        {
+          "name": "Main",
+          "formType": "Main"
+        },
+        {
+          "name": "Quick Create",
+          "formType": "QuickCreate"
+        }
+      ]
+    },
+    {
+      "logicalName": "ooooo_approvalhistory",
+      "displayName": "Approval History",
+      "pluralDisplayName": "Approval History",
+      "description": "Complete audit trail of all approval actions",
+      "ownership": "Organization",
+      "hasActivities": false,
+      "hasNotes": false,
+      "primaryNameColumn": "ooooo_historyid",
+      "columns": [
+        {
+          "logicalName": "ooooo_historyid",
+          "displayName": "History ID",
+          "type": "Text",
+          "maxLength": 100,
+          "required": "ApplicationRequired",
+          "isPrimaryName": true,
+          "description": "Unique identifier for this history record"
+        },
+        {
+          "logicalName": "ooooo_relatedrequest",
+          "displayName": "Related Request",
+          "type": "Lookup",
+          "target": "ooooo_staffschedule",
+          "required": "ApplicationRequired",
+          "description": "Link to the original schedule request"
+        },
+        {
+          "logicalName": "ooooo_employee",
+          "displayName": "Employee",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "ApplicationRequired",
+          "description": "Employee who made the request"
+        },
+        {
+          "logicalName": "ooooo_requeststartdate",
+          "displayName": "Request Start Date",
+          "type": "DateTime",
+          "format": "DateOnly",
+          "required": "ApplicationRequired",
+          "description": "Start date of the request"
+        },
+        {
+          "logicalName": "ooooo_requestenddate",
+          "displayName": "Request End Date",
+          "type": "DateTime",
+          "format": "DateOnly",
+          "required": "None",
+          "description": "End date of the request"
+        },
+        {
+          "logicalName": "ooooo_requesttype",
+          "displayName": "Request Type",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 2, "label": "Vacation"},
+            {"value": 3, "label": "Sick Leave"},
+            {"value": 4, "label": "Personal Day"},
+            {"value": 5, "label": "Other"}
+          ],
+          "description": "Type of time-off request"
+        },
+        {
+          "logicalName": "ooooo_action",
+          "displayName": "Action",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "Submitted"},
+            {"value": 2, "label": "Approved"},
+            {"value": 3, "label": "Rejected"},
+            {"value": 4, "label": "Cancelled"},
+            {"value": 5, "label": "Modified"}
+          ],
+          "description": "Action taken on the request"
+        },
+        {
+          "logicalName": "ooooo_actiondatetime",
+          "displayName": "Action Date/Time",
+          "type": "DateTime",
+          "format": "DateAndTime",
+          "required": "ApplicationRequired",
+          "description": "When the action occurred"
+        },
+        {
+          "logicalName": "ooooo_actor",
+          "displayName": "Actor",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "ApplicationRequired",
+          "description": "Person who performed the action"
+        },
+        {
+          "logicalName": "ooooo_actorcomments",
+          "displayName": "Comments",
+          "type": "Multiline",
+          "maxLength": 2000,
+          "required": "None",
+          "description": "Comments from the person performing the action"
+        },
+        {
+          "logicalName": "ooooo_originalrequestdetails",
+          "displayName": "Original Request Details",
+          "type": "Multiline",
+          "maxLength": 4000,
+          "required": "None",
+          "description": "JSON snapshot of original request data"
+        },
+        {
+          "logicalName": "ooooo_approvalduration",
+          "displayName": "Approval Duration (hours)",
+          "type": "Decimal",
+          "precision": 2,
+          "minValue": 0,
+          "maxValue": 10000,
+          "required": "None",
+          "description": "Time from submission to approval/rejection"
+        }
+      ],
+      "views": [
+        {
+          "name": "All History",
+          "viewType": "Public"
+        },
+        {
+          "name": "Recent Approvals",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_action eq 2, Order: ooooo_actiondatetime desc"
+        }
+      ]
+    },
+    {
+      "logicalName": "ooooo_userprofile",
+      "displayName": "User Profile",
+      "pluralDisplayName": "User Profiles",
+      "description": "Extended user profile information and manager relationships",
+      "ownership": "User",
+      "hasActivities": false,
+      "hasNotes": false,
+      "primaryNameColumn": "ooooo_displayname",
+      "columns": [
+        {
+          "logicalName": "ooooo_displayname",
+          "displayName": "Display Name",
+          "type": "Text",
+          "maxLength": 200,
+          "required": "ApplicationRequired",
+          "isPrimaryName": true,
+          "description": "User's full name"
+        },
+        {
+          "logicalName": "ooooo_user",
+          "displayName": "User",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "ApplicationRequired",
+          "description": "Link to system user account"
+        },
+        {
+          "logicalName": "ooooo_email",
+          "displayName": "Email",
+          "type": "Text",
+          "maxLength": 200,
+          "required": "ApplicationRequired",
+          "description": "User's email address"
+        },
+        {
+          "logicalName": "ooooo_manager",
+          "displayName": "Manager",
+          "type": "Lookup",
+          "target": "systemuser",
+          "required": "ApplicationRequired",
+          "description": "User's direct manager"
+        },
+        {
+          "logicalName": "ooooo_manageremail",
+          "displayName": "Manager Email",
+          "type": "Text",
+          "maxLength": 200,
+          "required": "ApplicationRequired",
+          "description": "Manager's email address"
+        },
+        {
+          "logicalName": "ooooo_department",
+          "displayName": "Department",
+          "type": "Text",
+          "maxLength": 100,
+          "required": "None",
+          "description": "Department or team"
+        },
+        {
+          "logicalName": "ooooo_ismanager",
+          "displayName": "Is Manager",
+          "type": "TwoOptions",
+          "trueLabel": "Yes",
+          "falseLabel": "No",
+          "defaultValue": false,
+          "required": "ApplicationRequired",
+          "description": "Whether this user has manager privileges"
+        },
+        {
+          "logicalName": "ooooo_isactive",
+          "displayName": "Is Active",
+          "type": "TwoOptions",
+          "trueLabel": "Active",
+          "falseLabel": "Inactive",
+          "defaultValue": true,
+          "required": "ApplicationRequired",
+          "description": "Whether user is active in the system"
+        },
+        {
+          "logicalName": "ooooo_notificationpreferences",
+          "displayName": "Notification Preferences",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "Teams Only"},
+            {"value": 2, "label": "Email Only"},
+            {"value": 3, "label": "Both"},
+            {"value": 4, "label": "None"}
+          ],
+          "defaultValue": 3,
+          "description": "User's notification preferences"
+        },
+        {
+          "logicalName": "ooooo_timezone",
+          "displayName": "Time Zone",
+          "type": "Choice",
+          "required": "None",
+          "options": [
+            {"value": 1, "label": "Eastern"},
+            {"value": 2, "label": "Central"},
+            {"value": 3, "label": "Mountain"},
+            {"value": 4, "label": "Pacific"}
+          ],
+          "defaultValue": 2,
+          "description": "User's time zone"
+        },
+        {
+          "logicalName": "ooooo_firsttimeuser",
+          "displayName": "First Time User",
+          "type": "TwoOptions",
+          "trueLabel": "Yes",
+          "falseLabel": "No",
+          "defaultValue": true,
+          "required": "None",
+          "description": "Whether to show welcome splash screen"
+        }
+      ],
+      "views": [
+        {
+          "name": "Active Users",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_isactive eq true"
+        },
+        {
+          "name": "Managers",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_ismanager eq true AND ooooo_isactive eq true"
+        }
+      ]
+    },
+    {
+      "logicalName": "ooooo_systemsetting",
+      "displayName": "System Setting",
+      "pluralDisplayName": "System Settings",
+      "description": "Application configuration and settings",
+      "ownership": "Organization",
+      "hasActivities": false,
+      "hasNotes": false,
+      "primaryNameColumn": "ooooo_settingname",
+      "columns": [
+        {
+          "logicalName": "ooooo_settingname",
+          "displayName": "Setting Name",
+          "type": "Text",
+          "maxLength": 100,
+          "required": "ApplicationRequired",
+          "isPrimaryName": true,
+          "description": "Unique setting identifier"
+        },
+        {
+          "logicalName": "ooooo_settingvalue",
+          "displayName": "Setting Value",
+          "type": "Text",
+          "maxLength": 1000,
+          "required": "ApplicationRequired",
+          "description": "Value of the setting"
+        },
+        {
+          "logicalName": "ooooo_settingtype",
+          "displayName": "Setting Type",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "Text"},
+            {"value": 2, "label": "Number"},
+            {"value": 3, "label": "Boolean"},
+            {"value": 4, "label": "JSON"}
+          ],
+          "description": "Data type of the setting"
+        },
+        {
+          "logicalName": "ooooo_description",
+          "displayName": "Description",
+          "type": "Multiline",
+          "maxLength": 1000,
+          "required": "None",
+          "description": "Description of what this setting controls"
+        },
+        {
+          "logicalName": "ooooo_category",
+          "displayName": "Category",
+          "type": "Choice",
+          "required": "ApplicationRequired",
+          "options": [
+            {"value": 1, "label": "General"},
+            {"value": 2, "label": "Approval"},
+            {"value": 3, "label": "Notification"},
+            {"value": 4, "label": "Calendar"},
+            {"value": 5, "label": "Security"}
+          ],
+          "description": "Setting category"
+        },
+        {
+          "logicalName": "ooooo_iseditable",
+          "displayName": "Is Editable",
+          "type": "TwoOptions",
+          "trueLabel": "Yes",
+          "falseLabel": "No",
+          "defaultValue": true,
+          "required": "ApplicationRequired",
+          "description": "Whether this setting can be changed by admins"
+        }
+      ],
+      "defaultData": [
+        {
+          "ooooo_settingname": "MinimumAdvanceNoticeDays",
+          "ooooo_settingvalue": "3",
+          "ooooo_settingtype": 2,
+          "ooooo_description": "Minimum days of advance notice required for OOO requests",
+          "ooooo_category": 2,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "MaxOOODaysPerRequest",
+          "ooooo_settingvalue": "30",
+          "ooooo_settingtype": 2,
+          "ooooo_description": "Maximum consecutive days allowed in a single OOO request",
+          "ooooo_category": 2,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "EnableDailyReminders",
+          "ooooo_settingvalue": "true",
+          "ooooo_settingtype": 3,
+          "ooooo_description": "Enable daily morning reminders for status updates",
+          "ooooo_category": 3,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "ReminderTime",
+          "ooooo_settingvalue": "08:00",
+          "ooooo_settingtype": 1,
+          "ooooo_description": "Time to send daily reminders (HH:MM format)",
+          "ooooo_category": 3,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "SyncToOutlookCalendar",
+          "ooooo_settingvalue": "true",
+          "ooooo_settingtype": 3,
+          "ooooo_description": "Automatically sync approved OOO to Outlook calendar",
+          "ooooo_category": 4,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "WorkingDays",
+          "ooooo_settingvalue": "[1,2,3,4,5]",
+          "ooooo_settingtype": 4,
+          "ooooo_description": "Working days of the week (0=Sunday, 6=Saturday)",
+          "ooooo_category": 1,
+          "ooooo_iseditable": true
+        },
+        {
+          "ooooo_settingname": "ColorScheme",
+          "ooooo_settingvalue": "{\"Onsite\":\"#4CAF50\",\"Offsite\":\"#2196F3\",\"OOO-Pending\":\"#FFC107\",\"OOO-Approved\":\"#9C27B0\"}",
+          "ooooo_settingtype": 4,
+          "ooooo_description": "Color codes for different status types",
+          "ooooo_category": 1,
+          "ooooo_iseditable": true
+        }
+      ],
+      "views": [
+        {
+          "name": "All Settings",
+          "viewType": "Public"
+        },
+        {
+          "name": "Editable Settings",
+          "viewType": "Public",
+          "fetchXml": "Filter: ooooo_iseditable eq true"
+        }
+      ]
+    }
+  ],
+  "security": {
+    "roles": [
+      {
+        "name": "OOOOO Calendar User",
+        "description": "Standard user - can manage own schedule and view team availability",
+        "privileges": {
+          "ooooo_staffschedule": {
+            "create": "Own",
+            "read": "Own",
+            "write": "Own",
+            "delete": "None"
+          },
+          "ooooo_approvalhistory": {
+            "create": "None",
+            "read": "Own",
+            "write": "None",
+            "delete": "None"
+          },
+          "ooooo_userprofile": {
+            "create": "None",
+            "read": "Organization",
+            "write": "Own",
+            "delete": "None"
+          },
+          "ooooo_systemsetting": {
+            "create": "None",
+            "read": "Organization",
+            "write": "None",
+            "delete": "None"
+          }
+        }
+      },
+      {
+        "name": "OOOOO Calendar Manager",
+        "description": "Manager - can approve requests and manage team schedules",
+        "privileges": {
+          "ooooo_staffschedule": {
+            "create": "Organization",
+            "read": "Organization",
+            "write": "Organization",
+            "delete": "None"
+          },
+          "ooooo_approvalhistory": {
+            "create": "Organization",
+            "read": "Organization",
+            "write": "None",
+            "delete": "None"
+          },
+          "ooooo_userprofile": {
+            "create": "Organization",
+            "read": "Organization",
+            "write": "Organization",
+            "delete": "None"
+          },
+          "ooooo_systemsetting": {
+            "create": "None",
+            "read": "Organization",
+            "write": "Organization",
+            "delete": "None"
+          }
+        }
+      }
+    ]
+  },
+  "relationships": [
+    {
+      "name": "ooooo_staffschedule_approvalhistory",
+      "type": "OneToMany",
+      "primaryTable": "ooooo_staffschedule",
+      "relatedTable": "ooooo_approvalhistory",
+      "primaryAttribute": "ooooo_staffscheduleid",
+      "relatedAttribute": "ooooo_relatedrequest",
+      "cascadeConfiguration": {
+        "assign": "NoCascade",
+        "delete": "RemoveLink",
+        "merge": "NoCascade",
+        "reparent": "NoCascade",
+        "share": "NoCascade",
+        "unshare": "NoCascade"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "name": "Microsoft Dataverse",
+      "purpose": "Primary data storage and retrieval",
+      "premium": false,
+      "note": "Included with Dataverse for Teams"
+    },
+    {
+      "name": "Office 365 Users",
+      "purpose": "User profile information and manager lookup",
+      "premium": false
+    },
+    {
+      "name": "Office 365 Outlook",
+      "purpose": "Calendar synchronization",
+      "premium": false
+    },
+    {
+      "name": "Approvals",
+      "purpose": "Teams approval workflow",
+      "premium": false
+    }
+  ],
+  "powerAutomate": {
+    "flows": [
+      {
+        "name": "OOOOO - OOO Approval Workflow",
+        "trigger": "When a row is added, modified or deleted (Dataverse)",
+        "description": "Handles time-off request approvals via Teams",
+        "included": true
+      },
+      {
+        "name": "OOOOO - Calendar Sync",
+        "trigger": "When a row is modified (Dataverse)",
+        "description": "Syncs approved OOO to Outlook calendar",
+        "included": true
+      },
+      {
+        "name": "OOOOO - Daily Reminder",
+        "trigger": "Recurrence (Daily)",
+        "description": "Sends daily reminders to update status",
+        "included": true,
+        "optional": true
+      }
+    ]
+  },
+  "packaging": {
+    "format": "Dataverse Solution",
+    "deployment": "Import via Power Apps",
+    "teamsIntegration": "Add as app in Teams",
+    "components": [
+      "4 Dataverse tables",
+      "1 Canvas app",
+      "3 Power Automate cloud flows",
+      "2 Security roles",
+      "Sample data for settings"
+    ]
+  }
+}

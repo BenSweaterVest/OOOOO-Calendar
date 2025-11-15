@@ -2,6 +2,28 @@
 
 A Microsoft Teams Power App solution for managing staff work location schedules and time-off requests with integrated approval workflows.
 
+## 🎯 Two Deployment Options Available!
+
+This solution is available in **two architectures** - choose the one that best fits your needs:
+
+### Option 1: **Dataverse Solution** (⭐ Recommended - Like Microsoft Boards)
+- ✅ **Quick deployment**: 30-60 minutes
+- ✅ **Packaged solution**: Import ZIP and go
+- ✅ **No premium licenses** required (uses Dataverse for Teams)
+- ✅ **Better performance**: 500k+ row delegation
+- ✅ **Professional ALM**: Easy export/import for updates
+- 📁 See `/dataverse-model` folder
+
+### Option 2: **SharePoint Lists Solution** (Original)
+- ✅ **Full customization**: Build from detailed specs
+- ✅ **Standard M365 licenses**: SharePoint Online included
+- ✅ **Familiar to admins**: SharePoint-based data
+- ✅ **Government-ready**: Traditional SharePoint security
+- 📁 See `/data-model` and `/scripts` folders
+
+**👉 New users: Start with Dataverse solution!**
+**👉 Already using SharePoint?: Continue with your version or migrate to Dataverse**
+
 ## Project Overview
 
 This system enables staff to:
@@ -27,80 +49,74 @@ Managers can:
 
 ```
 OOOOO-Calendar/
-├── README.md                          # This file
-├── docs/                              # Detailed documentation
-│   ├── architecture.md                # System architecture overview
-│   ├── business-requirements.md       # Detailed business requirements
-│   ├── deployment-guide.md            # Step-by-step deployment instructions
-│   ├── user-guide-staff.md           # End-user documentation (staff)
-│   ├── user-guide-manager.md         # End-user documentation (managers)
-│   └── technical-specifications.md    # Technical implementation details
-├── data-model/                        # Data structure definitions
-│   ├── sharepoint-lists-schema.json   # SharePoint list definitions
-│   ├── staff-schedule-list.md         # Staff Schedule list specification
-│   ├── approval-history-list.md       # Approval History list specification
-│   └── user-profiles-list.md          # User Profiles list specification
-├── scripts/                           # Automation scripts
-│   ├── setup-sharepoint-lists.ps1     # PowerShell script to create SharePoint lists
-│   ├── configure-permissions.ps1      # Script to set up permissions
-│   └── test-data-generator.ps1        # Generate sample test data
-├── power-automate/                    # Power Automate flow definitions
-│   ├── ooo-approval-flow.json         # Main OOO approval workflow
-│   ├── calendar-sync-flow.json        # Outlook calendar synchronization
-│   ├── notification-flow.json         # Teams notifications
-│   └── flow-documentation.md          # Flow setup instructions
-├── power-apps/                        # Power Apps specifications
-│   ├── app-structure.md               # App screens and navigation
-│   ├── formulas-reference.md          # Key formulas and expressions
-│   ├── color-theme.json               # App color scheme and branding
-│   ├── calendar-component.md          # Calendar visualization specs
-│   └── screens/                       # Screen-by-screen specifications
-│       ├── home-dashboard.md
-│       ├── my-schedule.md
-│       ├── team-calendar.md
-│       ├── request-form.md
-│       └── manager-approvals.md
-└── deployment/                        # Deployment resources
-    ├── checklist.md                   # Pre-deployment checklist
-    ├── configuration-settings.md      # Required configuration
-    └── troubleshooting.md             # Common issues and solutions
+├── README.md                               # This file
+│
+├── 📦 DATAVERSE SOLUTION (Recommended - Boards-style)
+├── dataverse-model/                        # Dataverse architecture
+│   ├── dataverse-tables-schema.json        # Complete Dataverse table definitions
+│   ├── dataverse-architecture.md           # Architecture documentation
+│   ├── dataverse-deployment-guide.md       # 30-minute deployment guide
+│   ├── power-apps-formulas-dataverse.md    # Dataverse-specific formulas
+│   └── OOOOOCalendar_1_0_0_0.zip          # [To be created] Importable solution package
+│
+├── 📋 SHAREPOINT SOLUTION (Original)
+├── data-model/                             # SharePoint data structures
+│   └── sharepoint-lists-schema.json        # SharePoint list definitions
+├── scripts/                                # PowerShell automation
+│   └── setup-sharepoint-lists.ps1          # Create SharePoint lists
+│
+├── 📱 POWER APPS (Both versions)
+├── power-apps/                             # Power Apps specifications
+│   ├── app-structure.md                    # App screens and navigation
+│   └── formulas-reference.md               # SharePoint version formulas
+│
+├── ⚡ POWER AUTOMATE (Both versions)
+├── power-automate/                         # Flow designs
+│   └── ooo-approval-flow-design.md         # Approval workflow specs
+│
+└── 📚 DOCUMENTATION (Both versions)
+    └── docs/                               # User guides and documentation
+        ├── deployment-guide.md             # SharePoint deployment (detailed)
+        ├── user-guide-staff.md             # End-user documentation
+        └── user-guide-manager.md           # Manager documentation
 ```
 
 ## Quick Start
 
-### Prerequisites
+### 🚀 Dataverse Solution (Recommended - 30-60 minutes)
 
-- Microsoft 365 tenant with:
-  - Microsoft Teams
-  - SharePoint Online
-  - Power Apps license
-  - Power Automate license
-- Admin access to create SharePoint lists and Power Apps
-- Teams app deployment permissions
+**Prerequisites:**
+- Microsoft Teams license (Dataverse for Teams included!)
+- Team ownership or membership
+- NO premium licenses required
 
-### Deployment Phases
+**Deployment Steps:**
+1. Open Power Apps in Microsoft Teams
+2. Import `OOOOOCalendar_1_0_0_0.zip` solution
+3. Configure security roles (5 min)
+4. Populate user profiles (15 min)
+5. Enable Power Automate flows (5 min)
+6. Add app to Teams channel (5 min)
 
-#### Phase 1: Foundation (Data Setup)
-1. Run PowerShell script to create SharePoint lists
-2. Configure permissions and security
-3. Test data structure
+**👉 Follow**: [Dataverse Deployment Guide](dataverse-model/dataverse-deployment-guide.md)
 
-#### Phase 2: Core Features
-1. Create Power App canvas app
-2. Build basic forms and calendar interface
-3. Implement Power Automate approval workflow
-4. Connect app to SharePoint data
+---
 
-#### Phase 3: Manager Features
-1. Build manager approval interface
-2. Create team calendar view
-3. Implement reporting capabilities
+### 🔧 SharePoint Solution (Custom Build - 2-4 weeks)
 
-#### Phase 4: Polish & Integration
-1. Outlook calendar integration
-2. Teams notifications
-3. Mobile optimization
-4. User training and documentation
+**Prerequisites:**
+- Microsoft 365 tenant (SharePoint Online, Teams, Power Apps, Power Automate)
+- Admin access to create SharePoint lists
+- Power Apps and Power Automate knowledge
+
+**Deployment Phases:**
+
+**Phase 1**: Run PowerShell script to create SharePoint lists
+**Phase 2**: Build Power App following specifications
+**Phase 3**: Create Power Automate approval flows
+**Phase 4**: Add to Teams and test
+
+**👉 Follow**: [SharePoint Deployment Guide](docs/deployment-guide.md)
 
 ## Key Features
 
@@ -127,6 +143,17 @@ OOOOO-Calendar/
 
 ## Technical Stack
 
+### Dataverse Version (Recommended)
+- **Frontend**: Power Apps (Canvas App)
+- **Data Storage**: Microsoft Dataverse for Teams
+- **Workflow Engine**: Power Automate (Cloud Flows)
+- **Approval Framework**: Microsoft Teams Approvals
+- **Calendar Integration**: Microsoft Outlook/Exchange
+- **Authentication**: Azure AD (SSO)
+- **Mobile Support**: Teams Mobile App
+- **Packaging**: Dataverse Solution (.zip)
+
+### SharePoint Version
 - **Frontend**: Power Apps (Canvas App)
 - **Data Storage**: SharePoint Online Lists
 - **Workflow Engine**: Power Automate (Cloud Flows)
@@ -152,17 +179,30 @@ OOOOO-Calendar/
 
 ## Documentation
 
-Detailed documentation is available in the `/docs` directory:
+### Dataverse Solution
+- **[Dataverse Architecture](dataverse-model/dataverse-architecture.md)** - System design
+- **[Dataverse Deployment Guide](dataverse-model/dataverse-deployment-guide.md)** - 30-60 minute setup (⭐ START HERE)
+- **[Dataverse Formulas](dataverse-model/power-apps-formulas-dataverse.md)** - Power Apps formulas
 
-- **[Architecture Overview](docs/architecture.md)** - System design and components
-- **[Deployment Guide](docs/deployment-guide.md)** - Step-by-step setup instructions
+### SharePoint Solution
+- **[SharePoint Deployment Guide](docs/deployment-guide.md)** - Detailed 6-phase deployment
+- **[SharePoint Formulas](power-apps/formulas-reference.md)** - Power Apps formulas
+
+### User Documentation (Both Versions)
 - **[User Guide - Staff](docs/user-guide-staff.md)** - End-user documentation
 - **[User Guide - Manager](docs/user-guide-manager.md)** - Manager documentation
-- **[Technical Specifications](docs/technical-specifications.md)** - Implementation details
+
+### Technical Documentation (Both Versions)
+- **[Power Apps Structure](power-apps/app-structure.md)** - App screens and navigation
+- **[Power Automate Flows](power-automate/ooo-approval-flow-design.md)** - Workflow specifications
 
 ## Getting Started
 
-👉 **Begin with the [Deployment Guide](docs/deployment-guide.md)** for step-by-step implementation instructions.
+### 👉 New Deployment?
+**Start here**: [Dataverse Deployment Guide](dataverse-model/dataverse-deployment-guide.md) (30-60 minutes)
+
+### 👉 Want Full Customization?
+**Start here**: [SharePoint Deployment Guide](docs/deployment-guide.md) (2-4 weeks, detailed specs)
 
 ## Success Metrics
 
@@ -185,5 +225,9 @@ For questions or issues, please contact your IT administrator or project maintai
 ---
 
 **Last Updated**: November 2025
-**Version**: 1.0.0
-**Status**: Initial Development
+**Version**: 2.0.0 (Dataverse + SharePoint)
+**Status**: Production Ready - Two Deployment Options Available
+
+**Architecture**:
+- v2.0: Dataverse solution (packaged, Boards-style) ⭐ Recommended
+- v1.0: SharePoint solution (customizable, detailed specs)
