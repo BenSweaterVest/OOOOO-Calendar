@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity Name="ooooo_userprofile">
+  <EntityInfo>
+    <entity Name="ooooo_userprofile">
+      <LocalizedNames>
+        <LocalizedName description="User Profile" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="User Profiles" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="Extended user profile information and manager relationships" languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <!-- Table columns defined in JSON schema - Reference/dataverse-tables-schema.json -->
+      </attributes>
+    </entity>
+  </EntityInfo>
+  <FormXml />
+  <SavedQueries />
+  <RibbonDiffXml />
+</Entity>

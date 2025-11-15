@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Entities>
+    <Entity Name="ooooo_staffschedule">
+      <EntityInfo>
+        <entity Name="ooooo_staffschedule">
+          <LocalizedNames>
+            <LocalizedName description="Staff Schedule" languagecode="1033" />
+          </LocalizedNames>
+          <LocalizedCollectionNames>
+            <LocalizedCollectionName description="Staff Schedules" languagecode="1033" />
+          </LocalizedCollectionNames>
+          <Descriptions>
+            <Description description="Main schedule and time-off request data" languagecode="1033" />
+          </Descriptions>
+          <attributes>
+            <!-- Primary field will be added by Dataverse -->
+          </attributes>
+        </entity>
+      </EntityInfo>
+    </Entity>
+    <Entity Name="ooooo_approvalhistory">
+      <EntityInfo>
+        <entity Name="ooooo_approvalhistory">
+          <LocalizedNames>
+            <LocalizedName description="Approval History" languagecode="1033" />
+          </LocalizedNames>
+          <LocalizedCollectionNames>
+            <LocalizedCollectionName description="Approval History" languagecode="1033" />
+          </LocalizedCollectionNames>
+          <Descriptions>
+            <Description description="Complete audit trail of all approval actions" languagecode="1033" />
+          </Descriptions>
+        </entity>
+      </EntityInfo>
+    </Entity>
+    <Entity Name="ooooo_userprofile">
+      <EntityInfo>
+        <entity Name="ooooo_userprofile">
+          <LocalizedNames>
+            <LocalizedName description="User Profile" languagecode="1033" />
+          </LocalizedNames>
+          <LocalizedCollectionNames>
+            <LocalizedCollectionName description="User Profiles" languagecode="1033" />
+          </LocalizedCollectionNames>
+          <Descriptions>
+            <Description description="Extended user profile information and manager relationships" languagecode="1033" />
+          </Descriptions>
+        </entity>
+      </EntityInfo>
+    </Entity>
+    <Entity Name="ooooo_systemsetting">
+      <EntityInfo>
+        <entity Name="ooooo_systemsetting">
+          <LocalizedNames>
+            <LocalizedName description="System Setting" languagecode="1033" />
+          </LocalizedNames>
+          <LocalizedCollectionNames>
+            <LocalizedCollectionName description="System Settings" languagecode="1033" />
+          </LocalizedCollectionNames>
+          <Descriptions>
+            <Description description="Application configuration and settings" languagecode="1033" />
+          </Descriptions>
+        </entity>
+      </EntityInfo>
+    </Entity>
+  </Entities>
+  <Roles />
+  <Workflows />
+  <FieldSecurityProfiles />
+  <Templates />
+  <EntityMaps />
+  <EntityRelationships />
+  <OrganizationSettings />
+  <optionsets />
+  <CustomControls />
+  <EntityDataProviders />
+</ImportExportXml>

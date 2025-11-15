@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity Name="ooooo_approvalhistory">
+  <EntityInfo>
+    <entity Name="ooooo_approvalhistory">
+      <LocalizedNames>
+        <LocalizedName description="Approval History" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="Approval History" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="Complete audit trail of all approval actions" languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <!-- Table columns defined in JSON schema - Reference/dataverse-tables-schema.json -->
+      </attributes>
+    </entity>
+  </EntityInfo>
+  <FormXml />
+  <SavedQueries />
+  <RibbonDiffXml />
+</Entity>

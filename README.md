@@ -15,13 +15,27 @@ This is a **pre-built solution package** that you simply import into Microsoft T
 
 ### Installation Steps
 
-1. **Download** the solution package: `OOOOOCalendar_1_0_0_0.cab`
+1. **Download** the solution package: `OOOOOCalendar_1_0_0_0.zip` (or build it yourself - see below)
 2. **Import** into Power Apps in Teams (30-60 minutes)
 3. **Configure** security roles and user profiles
 4. **Enable** Power Automate flows
 5. **Add** to your Teams channel
 
 👉 **[Follow the Installation Guide](INSTALLATION.md)** for complete step-by-step instructions.
+
+### Build the Package Locally (Optional)
+
+Don't have the pre-built package? You can build it from source:
+
+```powershell
+# Unblock the script (Windows)
+Unblock-File -Path .\scripts\pack-solution.ps1
+
+# Build the package
+.\scripts\pack-solution.ps1
+```
+
+👉 **[See BUILD.md](BUILD.md)** for complete build instructions and prerequisites.
 
 ---
 
@@ -85,7 +99,16 @@ This is a **pre-built solution package** that you simply import into Microsoft T
 OOOOO-Calendar/
 ├── README.md                           # This file
 ├── INSTALLATION.md                     # 30-60 minute installation guide ⭐ START HERE
-├── SOLUTION-PACKAGE-SPEC.md            # Technical specification of the .cab package
+├── BUILD.md                            # Build the package from source (PAC CLI)
+├── SOLUTION-PACKAGE-SPEC.md            # Technical specification of the package
+│
+├── solution/                           # Solution source files (for PAC CLI)
+│   ├── Other/                          # Solution metadata
+│   └── Entities/                       # Dataverse table definitions
+│
+├── scripts/                            # Build automation scripts
+│   ├── pack-solution.ps1               # Build the solution package
+│   └── unpack-solution.ps1             # Extract solution for editing
 │
 ├── Reference/                          # Technical documentation
 │   ├── dataverse-architecture.md       # System architecture overview
@@ -107,6 +130,7 @@ OOOOO-Calendar/
 
 ### Installation & Deployment
 - **[Installation Guide](INSTALLATION.md)** - Complete 30-60 minute setup ⭐ **START HERE**
+- **[Build Guide](BUILD.md)** - Build the solution package from source (PAC CLI)
 - **[Solution Package Specification](SOLUTION-PACKAGE-SPEC.md)** - Technical package details
 
 ### Technical Reference

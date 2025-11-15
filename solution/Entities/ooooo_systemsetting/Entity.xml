@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Entity Name="ooooo_systemsetting">
+  <EntityInfo>
+    <entity Name="ooooo_systemsetting">
+      <LocalizedNames>
+        <LocalizedName description="System Setting" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="System Settings" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="Application configuration and settings" languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <!-- Table columns defined in JSON schema - Reference/dataverse-tables-schema.json -->
+      </attributes>
+    </entity>
+  </EntityInfo>
+  <FormXml />
+  <SavedQueries />
+  <RibbonDiffXml />
+</Entity>

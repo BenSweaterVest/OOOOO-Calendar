@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.24021.187" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>OOOOOCalendar</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="OOOOO Calendar - Staff Scheduling &amp; Approval System" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Teams-integrated staff scheduling and time-off approval system using Dataverse for Teams" languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.0.0</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>minnesotait</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Minnesota IT Services" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Minnesota IT Services Government Solutions" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress>support@minnesotait.gov</EMailAddress>
+      <SupportingWebsiteUrl>https://www.minnesotait.gov</SupportingWebsiteUrl>
+      <CustomizationPrefix>ooooo</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>10000</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City>St. Paul</City>
+          <County></County>
+          <Country>United States</Country>
+          <Line1>658 Cedar Street</Line1>
+          <PostalCode>55155</PostalCode>
+          <StateOrProvince>Minnesota</StateOrProvince>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="ooooo_staffschedule" behavior="0" />
+      <RootComponent type="1" schemaName="ooooo_approvalhistory" behavior="0" />
+      <RootComponent type="1" schemaName="ooooo_userprofile" behavior="0" />
+      <RootComponent type="1" schemaName="ooooo_systemsetting" behavior="0" />
+    </RootComponents>
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>
