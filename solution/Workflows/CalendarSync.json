@@ -1,0 +1,132 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "triggers": {
+    "When_a_staff_schedule_is_modified": {
+      "type": "OpenApiConnectionWebhook",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "SubscribeWebhookTrigger",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "subscriptionRequest/message": 2,
+          "subscriptionRequest/entityname": "ooooo_staffschedule",
+          "subscriptionRequest/scope": 4,
+          "subscriptionRequest/filteringattributes": "ooooo_status"
+        }
+      }
+    }
+  },
+  "actions": {
+    "Check_if_OOO_Approved": {
+      "runAfter": {},
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@triggerOutputs()?['body/ooooo_status']",
+          4
+        ]
+      },
+      "actions": {
+        "Check_if_calendar_event_exists": {
+          "runAfter": {},
+          "type": "If",
+          "expression": {
+            "and": [
+              {
+                "not": {
+                  "equals": [
+                    "@triggerOutputs()?['body/ooooo_calendareventid']",
+                    "@null"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "equals": [
+                    "@triggerOutputs()?['body/ooooo_calendareventid']",
+                    ""
+                  ]
+                }
+              }
+            ]
+          },
+          "actions": {},
+          "else": {
+            "actions": {
+              "Create_calendar_event": {
+                "runAfter": {},
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_office365",
+                    "operationId": "CalendarPostItem_V3",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                  },
+                  "parameters": {
+                    "table": "Calendar",
+                    "item/subject": "OOO: @{triggerOutputs()?['body/ooooo_requesttype@OData.Community.Display.V1.FormattedValue']}",
+                    "item/start": "@triggerOutputs()?['body/ooooo_startdate']",
+                    "item/end": "@triggerOutputs()?['body/ooooo_enddate']",
+                    "item/isAllDayEvent": true,
+                    "item/showAs": "oof",
+                    "item/body": "Time off request approved.\n\nRequest ID: @{triggerOutputs()?['body/ooooo_requestid']}\nType: @{triggerOutputs()?['body/ooooo_requesttype@OData.Community.Display.V1.FormattedValue']}\nDuration: @{triggerOutputs()?['body/ooooo_numberofdays']} days\n\nComments: @{triggerOutputs()?['body/ooooo_comments']}"
+                  }
+                }
+              },
+              "Update_schedule_with_event_id": {
+                "runAfter": {
+                  "Create_calendar_event": ["Succeeded"]
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "UpdateRecord",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "ooooo_staffschedule",
+                    "recordId": "@triggerOutputs()?['body/ooooo_staffscheduleid']",
+                    "item": {
+                      "ooooo_calendareventid": "@outputs('Create_calendar_event')?['body/Id']"
+                    }
+                  }
+                },
+                "description": "Save event ID for future reference"
+              },
+              "Send_confirmation_email": {
+                "runAfter": {
+                  "Update_schedule_with_event_id": ["Succeeded"]
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_office365",
+                    "operationId": "SendEmailV2",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                  },
+                  "parameters": {
+                    "emailMessage/To": "@triggerOutputs()?['body/ooooo_employeeemail']",
+                    "emailMessage/Subject": "Time Off Approved - Calendar Updated",
+                    "emailMessage/Body": "<html><body><h2>Time Off Request Approved</h2><p>Your time off request has been approved and added to your calendar.</p><p><strong>Request ID:</strong> @{triggerOutputs()?['body/ooooo_requestid']}<br><strong>Type:</strong> @{triggerOutputs()?['body/ooooo_requesttype@OData.Community.Display.V1.FormattedValue']}<br><strong>Start Date:</strong> @{formatDateTime(triggerOutputs()?['body/ooooo_startdate'], 'MM/dd/yyyy')}<br><strong>End Date:</strong> @{formatDateTime(triggerOutputs()?['body/ooooo_enddate'], 'MM/dd/yyyy')}<br><strong>Duration:</strong> @{triggerOutputs()?['body/ooooo_numberofdays']} days</p><p>The time off has been automatically added to your Outlook calendar.</p></body></html>",
+                    "emailMessage/Importance": "Normal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outputs": {}
+}

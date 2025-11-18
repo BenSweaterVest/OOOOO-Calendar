@@ -1,0 +1,177 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "triggers": {
+    "Recurrence": {
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "schedule": {
+          "hours": [
+            "8"
+          ],
+          "minutes": [
+            0
+          ]
+        },
+        "timeZone": "Central Standard Time"
+      },
+      "type": "Recurrence"
+    }
+  },
+  "actions": {
+    "Check_if_reminders_enabled": {
+      "runAfter": {},
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ooooo_systemsetting",
+          "$filter": "ooooo_settingname eq 'EnableDailyReminders'"
+        }
+      }
+    },
+    "If_reminders_enabled": {
+      "runAfter": {
+        "Check_if_reminders_enabled": ["Succeeded"]
+      },
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@first(outputs('Check_if_reminders_enabled')?['body/value'])?['ooooo_settingvalue']",
+          "true"
+        ]
+      },
+      "actions": {
+        "Get_active_users": {
+          "runAfter": {},
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "ooooo_userprofile",
+              "$filter": "ooooo_isactive eq true and ooooo_notificationpreferences ne 4"
+            }
+          },
+          "description": "Get users who want notifications (not 'None')"
+        },
+        "Get_pending_requests": {
+          "runAfter": {
+            "Get_active_users": ["Succeeded"]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "ooooo_staffschedule",
+              "$filter": "ooooo_status eq 3 and ooooo_isactive eq true"
+            }
+          },
+          "description": "Get all pending OOO requests"
+        },
+        "For_each_manager": {
+          "foreach": "@outputs('Get_active_users')?['body/value']",
+          "actions": {
+            "Check_if_manager": {
+              "type": "If",
+              "expression": {
+                "equals": [
+                  "@item()?['ooooo_ismanager']",
+                  true
+                ]
+              },
+              "actions": {
+                "Count_pending_for_this_manager": {
+                  "runAfter": {},
+                  "type": "Compose",
+                  "inputs": "@length(filter(outputs('Get_pending_requests')?['body/value'], lambda('x', equals(item()?['ooooo_manageremail'], item()?['ooooo_employeeemail']))))",
+                  "description": "Count requests awaiting this manager's approval"
+                },
+                "If_has_pending_requests": {
+                  "runAfter": {
+                    "Count_pending_for_this_manager": ["Succeeded"]
+                  },
+                  "type": "If",
+                  "expression": {
+                    "greater": [
+                      "@outputs('Count_pending_for_this_manager')",
+                      0
+                    ]
+                  },
+                  "actions": {
+                    "Send_reminder_to_manager": {
+                      "runAfter": {},
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_office365",
+                          "operationId": "SendEmailV2",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                        },
+                        "parameters": {
+                          "emailMessage/To": "@item()?['ooooo_email']",
+                          "emailMessage/Subject": "Pending Time Off Requests - Action Required",
+                          "emailMessage/Body": "<html><body><h2>Pending Approvals Reminder</h2><p>Hi @{item()?['ooooo_displayname']},</p><p>You have <strong>@{outputs('Count_pending_for_this_manager')}</strong> pending time off request(s) awaiting your approval.</p><p>Please review and respond to these requests in the OOOOO Calendar app.</p><p><a href='https://apps.powerapps.com'>Open OOOOO Calendar App</a></p><p>Thank you!</p></body></html>",
+                          "emailMessage/Importance": "Normal"
+                        }
+                      },
+                      "description": "Send email reminder to manager about pending requests"
+                    },
+                    "Post_Teams_message_to_manager": {
+                      "runAfter": {
+                        "Send_reminder_to_manager": ["Succeeded"]
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_teams",
+                          "operationId": "PostMessageToConversation",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams"
+                        },
+                        "parameters": {
+                          "poster": "User",
+                          "location": "Chat with Bot",
+                          "body/recipient": "@item()?['ooooo_email']",
+                          "body/messageBody": "<h2>⏰ Pending Time Off Requests</h2><p>You have <strong>@{outputs('Count_pending_for_this_manager')}</strong> pending time off request(s) awaiting your approval.</p><p>Please open the OOOOO Calendar app to review and respond.</p>"
+                        }
+                      },
+                      "description": "Send Teams chat notification"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Get_pending_requests": ["Succeeded"]
+          },
+          "type": "Foreach",
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "outputs": {}
+}

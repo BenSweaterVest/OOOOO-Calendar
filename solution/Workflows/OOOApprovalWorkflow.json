@@ -1,0 +1,124 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "triggers": {
+    "When_a_staff_schedule_is_created_or_modified": {
+      "type": "OpenApiConnectionWebhook",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "SubscribeWebhookTrigger",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "subscriptionRequest/message": 3,
+          "subscriptionRequest/entityname": "ooooo_staffschedule",
+          "subscriptionRequest/scope": 4
+        }
+      }
+    }
+  },
+  "actions": {
+    "Check_if_OOO_Pending": {
+      "runAfter": {},
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@triggerOutputs()?['body/ooooo_status']",
+          3
+        ]
+      },
+      "actions": {
+        "Get_manager_email": {
+          "runAfter": {},
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_office365users",
+              "operationId": "UserProfile_V2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+            },
+            "parameters": {
+              "userId": "@triggerOutputs()?['body/ooooo_employee']"
+            }
+          }
+        },
+        "Create_approval_request": {
+          "runAfter": {
+            "Get_manager_email": ["Succeeded"]
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_approvals",
+              "operationId": "CreateApprovalV2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_approvals"
+            },
+            "parameters": {
+              "approvalType": "Basic",
+              "WebhookApprovalCreationInput/title": "Time Off Request: @{triggerOutputs()?['body/ooooo_requestid']}",
+              "WebhookApprovalCreationInput/assignedTo": "@outputs('Get_manager_email')?['body/Manager']",
+              "WebhookApprovalCreationInput/details": "Employee: @{triggerOutputs()?['body/ooooo_employeeemail']}\nRequest Type: @{triggerOutputs()?['body/ooooo_requesttype@OData.Community.Display.V1.FormattedValue']}\nStart Date: @{triggerOutputs()?['body/ooooo_startdate']}\nEnd Date: @{triggerOutputs()?['body/ooooo_enddate']}\nNumber of Days: @{triggerOutputs()?['body/ooooo_numberofdays']}\nComments: @{triggerOutputs()?['body/ooooo_comments']}"
+            }
+          }
+        },
+        "Update_with_approval_result": {
+          "runAfter": {
+            "Create_approval_request": ["Succeeded"]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "ooooo_staffschedule",
+              "recordId": "@triggerOutputs()?['body/ooooo_staffscheduleid']",
+              "item": {
+                "ooooo_status": "@if(equals(outputs('Create_approval_request')?['body/outcome'], 'Approve'), 4, 5)",
+                "ooooo_approvalrequestid": "@outputs('Create_approval_request')?['body/name']",
+                "ooooo_approvaldatetime": "@utcNow()",
+                "ooooo_managercomments": "@outputs('Create_approval_request')?['body/responses'][0]['comments']"
+              }
+            }
+          }
+        },
+        "Create_approval_history_record": {
+          "runAfter": {
+            "Update_with_approval_result": ["Succeeded"]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "CreateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "ooooo_approvalhistory",
+              "item": {
+                "ooooo_historyid": "HIST-@{formatDateTime(utcNow(), 'yyyyMMdd-HHmmss')}",
+                "ooooo_requeststartdate": "@triggerOutputs()?['body/ooooo_startdate']",
+                "ooooo_requestenddate": "@triggerOutputs()?['body/ooooo_enddate']",
+                "ooooo_requesttype": "@triggerOutputs()?['body/ooooo_requesttype']",
+                "ooooo_action": "@if(equals(outputs('Create_approval_request')?['body/outcome'], 'Approve'), 2, 3)",
+                "ooooo_actiondatetime": "@utcNow()",
+                "ooooo_actorcomments": "@outputs('Create_approval_request')?['body/responses'][0]['comments']"
+              }
+            }
+          },
+          "description": "Log approval action to history table"
+        }
+      }
+    }
+  },
+  "outputs": {}
+}
