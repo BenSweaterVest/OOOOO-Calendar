@@ -929,6 +929,8 @@ Create 3 cloud flows for the app to function:
 2. Create Outlook calendar event
 3. Update Staff Schedule with event ID
 
+**Detailed design**: See `/Reference/power-automate/calendar-sync-flow-design.md`
+
 ### Flow 3: OOOOO - Daily Reminder (Optional)
 
 **Trigger**: Recurrence (Daily at 8:00 AM)
@@ -937,6 +939,8 @@ Create 3 cloud flows for the app to function:
 1. Get active users from User Profile
 2. Post adaptive card to Teams
 3. Prompt for status update
+
+**Detailed design**: See `/Reference/power-automate/daily-reminder-flow-design.md`
 
 ---
 
