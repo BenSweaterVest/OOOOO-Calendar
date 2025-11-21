@@ -1,5 +1,19 @@
 # Building the OOOOO Calendar Solution Package
 
+> **📖 Updated Guide Available**
+>
+> This build guide has been integrated into the comprehensive [Installation & Build Guide](INSTALLATION.md).
+>
+> Please refer to **[INSTALLATION.md - Method 2: Build from Source](INSTALLATION.md#method-2-build-from-source)** for the latest build instructions, which now includes:
+> - Build from source steps
+> - Import pre-built solutions
+> - Manual table creation for restricted environments
+> - All in one comprehensive guide
+>
+> This file is kept for reference only.
+
+---
+
 This guide explains how to build the `OOOOOCalendar_1_0_0_0.zip` solution package from source files using the **Power Platform CLI**.
 
 ---

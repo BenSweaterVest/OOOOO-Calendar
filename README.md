@@ -13,31 +13,14 @@ A Microsoft Teams Power App solution for managing staff work location schedules 
 
 This is a **pre-built solution package** that you simply import into Microsoft Teams Power Apps - just like Microsoft Boards!
 
-### Installation Steps
+### Installation Options
 
-1. **Download** the solution package: `OOOOOCalendar_1_0_0_0.zip` (or build it yourself - see below)
-2. **Import** into Power Apps in Teams (30-60 minutes)
-3. **Configure** security roles and user profiles
-4. **Enable** Power Automate flows
-5. **Add** to your Teams channel
+**Choose your installation method**:
+- 🚀 **Import Pre-Built Solution** (30-60 min) - Quick deployment with solution package
+- 🔧 **Build from Source** (1-2 hours) - For developers and version control
+- 🛠️ **Manual Table Creation** (2-4 hours) - For restricted environments that block imports
 
-👉 **[Follow the Installation Guide](INSTALLATION.md)** for complete step-by-step instructions.
-
-**Can't import the solution?** See **[Manual Table Creation Guide](MANUAL-TABLE-CREATION.md)** for environments that don't allow solution imports.
-
-### Build the Package Locally (Optional)
-
-Don't have the pre-built package? You can build it from source:
-
-```powershell
-# Unblock the script (Windows)
-Unblock-File -Path .\scripts\pack-solution.ps1
-
-# Build the package
-.\scripts\pack-solution.ps1
-```
-
-👉 **[See BUILD.md](BUILD.md)** for complete build instructions and prerequisites.
+👉 **[Complete Installation & Build Guide](INSTALLATION.md)** - One comprehensive guide covering all three methods with step-by-step instructions.
 
 ---
 
