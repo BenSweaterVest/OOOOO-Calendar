@@ -23,7 +23,24 @@ Welcome! This guide will help you install the OOOOO Calendar Teams app in 30-60 
 3. [Configure security and users](#step-3-configure-security)
 4. [Add app to Teams channel](#step-4-add-to-teams)
 
-### Option 2: Teams Admin Center Upload
+### Option 2: Manual Table Creation
+
+**Time**: 2-4 hours
+
+For environments that don't allow solution imports or require manual setup.
+
+1. **See**: [MANUAL-TABLE-CREATION.md](MANUAL-TABLE-CREATION.md)
+2. Create tables, columns, and relationships manually
+3. Configure security roles
+4. Build canvas app
+
+**When to use this option**:
+- Solution import is blocked by IT policy
+- You need to customize table structure
+- Environment restrictions prevent package imports
+- You want to understand the full data model
+
+### Option 3: Teams Admin Center Upload
 
 For IT administrators who want to deploy organization-wide.
 

@@ -23,6 +23,8 @@ This is a **pre-built solution package** that you simply import into Microsoft T
 
 👉 **[Follow the Installation Guide](INSTALLATION.md)** for complete step-by-step instructions.
 
+**Can't import the solution?** See **[Manual Table Creation Guide](MANUAL-TABLE-CREATION.md)** for environments that don't allow solution imports.
+
 ### Build the Package Locally (Optional)
 
 Don't have the pre-built package? You can build it from source:
